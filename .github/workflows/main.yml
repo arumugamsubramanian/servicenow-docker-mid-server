@@ -28,13 +28,17 @@ jobs:
       - name: Run script
         run: poetry run servicenow-release-notes vancouver
 
-      - name: Configure Git user
-        run: |
-          git config user.email "actions@github.com"
-          git config user.name "GitHub Actions"
-          
-      - name: Commit the datasets
-        run: |
-          git add .
-          git commit -m "csv datasets"
-          git push
+      - name: Commit & Push changes
+        uses: actions-js/push@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+#      - name: Configure Git user
+#        run: |
+#          git config user.email "actions@github.com"
+#          git config user.name "GitHub Actions"
+#
+#      - name: Commit the datasets
+#        run: |
+#          git add .
+#          git commit -m "csv datasets"
+#          git push
