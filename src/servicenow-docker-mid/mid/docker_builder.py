@@ -69,6 +69,7 @@ def download_and_build(download_links, platform):
             #                   "-t", docker_tag, "."]
             subprocess.run(docker_command, cwd=folder_name, check=True)
             print(f"Docker build completed for {filename}")
+            push_docker_image(docker_image_name, docker_image_tag)
             # build_options = {
             #     "path": build_context,
             #     "dockerfile": "Dockerfile",  # Path to your Dockerfile
@@ -81,7 +82,6 @@ def download_and_build(download_links, platform):
             #     for line in response:
             #         if "stream" in line:
             #             print(line["stream"].strip())
-            push_docker_image(docker_image_name, docker_image_tag)
 
 
 def push_docker_image(docker_image_name, docker_image_tag):
@@ -93,7 +93,7 @@ def push_docker_image(docker_image_name, docker_image_tag):
     docker_client.login(username=docker_username, password=docker_password)
 
     # Tag the Docker image
-    docker_image = docker_client.images.get(docker_image_name+':'+docker_image_tag)
+    docker_image = docker_client.images.get(docker_image_name + ':' + docker_image_tag)
     docker_image.tag(repository='arumugamsubramanian/mid', tag=docker_image_tag)
 
     # Push the Docker image to the registry
