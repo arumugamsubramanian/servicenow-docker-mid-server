@@ -5,7 +5,7 @@ on:
 
 jobs:
   mid-docker-build-vancouver:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     permissions:
       # Give the default GITHUB_TOKEN write permission to commit and push the
@@ -32,7 +32,7 @@ jobs:
         run: |
           docker buildx version
 #          poetry run servicenow-docker-build vancouver linux
-#          poetry run servicenow-docker-build vancouver windows
+          poetry run servicenow-docker-build vancouver windows
 
 #  mid-docker-build-utah:
 #    runs-on: ubuntu-latest

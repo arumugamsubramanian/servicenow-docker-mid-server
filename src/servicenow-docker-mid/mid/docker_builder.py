@@ -28,7 +28,7 @@ def generate_download_links(data, country, platform):
     return download_links
 
 
-def download_and_build(download_links):
+def download_and_build(download_links, platform):
     for link in download_links:
         # Download the package from the link
         response = requests.get(link, stream=True)
@@ -49,6 +49,8 @@ def download_and_build(download_links):
 
             os.remove(filename)  # Remove the zip file after extraction
 
+            docker_client = docker.from_env()
+
             # Load the DOCKER_TAG environment variable from the .env file
             load_dotenv(dotenv_path=f"{folder_name}/.env")
             docker_tag = os.getenv("DOCKER_TAG")
@@ -57,10 +59,27 @@ def download_and_build(download_links):
             print(docker_tag)
             docker_image_name = docker_tag.split(':')[0]
             docker_image_tag = docker_tag.split(':')[1]
-            docker_command = ["docker", "build", "-t", docker_tag, "."]
+            # build_context = f"{folder_name}"
+            docker_platform = f"{platform}/amd64"
+            # Create a new builder instance using Docker Buildx
+            subprocess.run(["docker", "buildx", "create", "--use"])
+            docker_command = ["docker", "buildx", "build",
+                              "--platform", "windows/amd64", "--push",
+                              "-t", docker_tag, "."]
             subprocess.run(docker_command, cwd=folder_name, check=True)
             print(f"Docker build completed for {filename}")
-
+            # build_options = {
+            #     "path": build_context,
+            #     "dockerfile": "Dockerfile",  # Path to your Dockerfile
+            #     "tag": docker_image_name+":"+docker_image_tag,
+            # }
+            # for platform in platforms:
+            #     print(f"Building for platform: {platform}")
+            #     build_options["platform"] = platform
+            #     response = docker_client.images.build(**build_options)
+            #     for line in response:
+            #         if "stream" in line:
+            #             print(line["stream"].strip())
             push_docker_image(docker_image_name, docker_image_tag)
 
 
@@ -101,7 +120,7 @@ def main():
     download_links = generate_download_links(data, country, platform)
 
     # Download and build packages
-    download_and_build(download_links)
+    download_and_build(download_links, platform)
 
 
 if __name__ == "__main__":
