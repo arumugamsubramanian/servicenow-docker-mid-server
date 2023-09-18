@@ -40,9 +40,6 @@ jobs:
         run: poetry install --no-interaction
       - run: |
           source $VENV
-      - name: Run script
-        run: |
-#          poetry run servicenow-docker-build vancouver linux
           poetry run servicenow-docker-build vancouver windows
 
 #  mid-docker-build-utah:
