@@ -61,11 +61,12 @@ def download_and_build(download_links, platform):
             docker_image_tag = docker_tag.split(':')[1]
             # build_context = f"{folder_name}"
             docker_platform = f"{platform}/amd64"
+            docker_command = ["docker", "build", "-t", docker_tag, "."]
             # Create a new builder instance using Docker Buildx
-            subprocess.run(["docker", "buildx", "create", "--use"])
-            docker_command = ["docker", "buildx", "build",
-                              "--platform", "windows/amd64", "--push",
-                              "-t", docker_tag, "."]
+            # subprocess.run(["docker", "buildx", "create", "--use"])
+            # docker_command = ["docker", "buildx", "build",
+            #                   "--platform", "windows/amd64", "--push",
+            #                   "-t", docker_tag, "."]
             subprocess.run(docker_command, cwd=folder_name, check=True)
             print(f"Docker build completed for {filename}")
             # build_options = {
