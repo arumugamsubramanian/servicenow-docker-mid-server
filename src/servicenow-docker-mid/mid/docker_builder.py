@@ -95,10 +95,10 @@ def push_docker_image(docker_image_name, docker_image_tag):
 
     # Tag the Docker image
     docker_image = docker_client.images.get(docker_image_name + ':' + docker_image_tag)
-    docker_image.tag(repository='arumugamsubramanian/mid', tag=docker_image_tag)
+    docker_image.tag(repository='arumugamsubramanian/mid-windows', tag=docker_image_tag)
 
     # Push the Docker image to the registry
-    docker_client.images.push(repository='arumugamsubramanian/mid', tag=docker_image_tag)
+    docker_client.images.push(repository='arumugamsubramanian/mid-windows', tag=docker_image_tag)
 
 
 def main():
