@@ -49,7 +49,7 @@ def download_and_build(download_links, platform):
 
             os.remove(filename)  # Remove the zip file after extraction
 
-            docker_client = docker.from_env()
+            # docker_client = docker.from_env()
 
             # Load the DOCKER_TAG environment variable from the .env file
             load_dotenv(dotenv_path=f"{folder_name}/.env")
@@ -60,7 +60,7 @@ def download_and_build(download_links, platform):
             docker_image_name = docker_tag.split(':')[0]
             docker_image_tag = docker_tag.split(':')[1]
             # build_context = f"{folder_name}"
-            docker_platform = f"{platform}/amd64"
+            # docker_platform = f"{platform}/amd64"
             docker_command = ["docker", "build", "-t", docker_tag, "."]
             # Create a new builder instance using Docker Buildx
             # subprocess.run(["docker", "buildx", "create", "--use"])
