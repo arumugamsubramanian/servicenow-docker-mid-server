@@ -40,25 +40,10 @@ jobs:
         run: poetry install --no-interaction
       - run: |
           source $VENV
-          pytest --version
-
-#      - name: Set up Python
-#        uses: actions/setup-python@v4.7.0
-#        with:
-#          python-version: 3.10.13
-#
-#      - name: Install Poetry
-#        run: |
-#          curl -sSL https://install.python-poetry.org | python3 -
-#
-#      - name: Install dependencies
-#        run: poetry install
-#
-#      - name: Run script
-#        run: |
-#          docker buildx version
-##          poetry run servicenow-docker-build vancouver linux
-#          poetry run servicenow-docker-build vancouver windows
+      - name: Run script
+        run: |
+#          poetry run servicenow-docker-build vancouver linux
+          poetry run servicenow-docker-build vancouver windows
 
 #  mid-docker-build-utah:
 #    runs-on: ubuntu-latest
