@@ -86,6 +86,7 @@ def download_and_build(download_links, platform):
 
 def push_docker_image(docker_image_name, docker_image_tag):
     # Set up a Docker client
+    print("here")
     docker_client = docker.from_env()
     # Authenticate with the Docker registry
     docker_username = os.getenv("DOCKER_USERNAME")
