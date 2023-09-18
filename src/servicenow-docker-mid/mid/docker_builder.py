@@ -61,7 +61,7 @@ def download_and_build(download_links, platform):
             docker_image_tag = docker_tag.split(':')[1]
             # build_context = f"{folder_name}"
             # docker_platform = f"{platform}/amd64"
-            docker_command = ["docker", "build", "-t", docker_tag, "."]
+            docker_command = ["docker", "build", "-t", "mid-windows:"f"{docker_image_tag}", "."]
             # Create a new builder instance using Docker Buildx
             # subprocess.run(["docker", "buildx", "create", "--use"])
             # docker_command = ["docker", "buildx", "build",
@@ -94,7 +94,7 @@ def push_docker_image(docker_image_name, docker_image_tag):
     docker_client.login(username=docker_username, password=docker_password)
 
     # Tag the Docker image
-    docker_image = docker_client.images.get(docker_image_name + ':' + docker_image_tag)
+    docker_image = docker_client.images.get("mid-windows:" + docker_image_tag)
     docker_image.tag(repository='arumugamsubramanian/mid-windows', tag=docker_image_tag)
 
     # Push the Docker image to the registry
