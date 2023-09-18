@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "servicenow-docker-mid-server"
+version = "0.1.0"
+description = "cli to scrape servicenow releasenotes build tags, docker build and publish"
+authors = ["arumugam subramanian"]
+license = "MIT"
+readme = "README.md"
+packages = [
+    { include = "servicenow-releasenotes", from = "src" },
+    { include = "servicenow-docker-mid", from = "src" },
+]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+requests = "^2.31.0"
+beautifulsoup4 = "^4.12.2"
+python-dotenv = "^1.0.0"
+docker = "^6.1.3"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+servicenow-release-notes = "servicenow-releasenotes.release-notes-scraper.release_notes_scraper:main"
+servicenow-docker-build = "servicenow-docker-mid.mid.docker_builder:main"
