@@ -26,7 +26,7 @@ jobs:
         run: poetry install
 
       - name: Run script
-        run: poetry run servicenow-release-notes
+        run: poetry run servicenow-release-notes vancouver
 
       - name: Configure Git user
         run: |
