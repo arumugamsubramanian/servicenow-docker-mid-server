@@ -38,7 +38,8 @@ jobs:
         run: poetry install --no-interaction --no-root
       - name: Install library
         run: poetry install --no-interaction
-      - run: |
+      - name: Run script
+        run: |
           source $VENV
           poetry run servicenow-docker-build vancouver windows
 
