@@ -6,6 +6,11 @@ on:
 jobs:
   mid-docker-build-windows:
     runs-on: windows-2019
+    strategy:
+      matrix:
+        version:
+          - vancouver
+          - utah
     defaults:
       run:
         shell: bash
@@ -41,7 +46,7 @@ jobs:
       - name: Run script
         run: |
           source $VENV
-          poetry run servicenow-docker-build --country vancouver --platform windows
+          poetry run servicenow-docker-build --country ${{ matrix.version }} --platform windows
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
