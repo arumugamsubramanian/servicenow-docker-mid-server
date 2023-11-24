@@ -28,7 +28,7 @@ cp -r snc_mid_server/ /app/
 exit
 docker stop mid_server
 ```
-7. Now start the mid server with below command from second time onwards
+7. Now start the mid-server with below command from second time onwards
 ```shell
 docker run --env-file run/mid.env \
   -v $(pwd)/run/snc_mid_server_container_files/snc_mid_server:/opt/snc_mid_server \
