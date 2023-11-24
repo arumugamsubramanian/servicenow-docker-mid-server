@@ -1,11 +1,7 @@
-# servicenow-docker-mid-server
-A Docker Recipe for ServiceNow Mid Server
-
-
 ## Instruction to run mid server docker image
 
 1. Place the sensitive data in mid-secrets.properties
-2. add secrets to [mid.env](run%2Fmid.env)
+2. add secrets to [mid.env](mid.env)
 3. Run the docker image
 ```shell
 docker run --env-file <env_file_name_here> <docker_tag or image_id>
