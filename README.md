@@ -10,5 +10,7 @@ A Docker Recipe for ServiceNow Mid Server
 ```shell
 docker run --env-file <env_file_name_here> <docker_tag or image_id>
 
-docker run --env-file run/mid.env arumugamsubramanian/mid-linux:vancouver-07-06-2023__patch2-hotfix1-10-04-2023_10-06-2023_1235
+docker run --env-file run/mid.env -v run/snc_mid_server:/opt/snc_mid_server arumugamsubramanian/mid-linux:vancouver-07-06-2023__patch2-hotfix1-10-04-2023_10-06-2023_1235
 ```
+
+
