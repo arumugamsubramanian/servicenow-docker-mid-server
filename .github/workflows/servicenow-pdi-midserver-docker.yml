@@ -1,0 +1,40 @@
+name: PDI - Build MidServer Docker Image and publish to docker registry only for PDI
+
+on:
+  workflow_dispatch:
+
+jobs:
+  mid-docker-build-linux:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        version:
+          - pdi
+
+    permissions:
+      # Give the default GITHUB_TOKEN write permission to commit and push the
+      # added or changed files to the repository.
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4.7.0
+        with:
+          python-version: 3.10.13
+
+      - name: Install Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+
+      - name: Install dependencies
+        run: poetry install
+
+      - name: Run script
+        run: |
+          poetry run servicenow-docker-build --country ${{ matrix.version }} --platform linux
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
