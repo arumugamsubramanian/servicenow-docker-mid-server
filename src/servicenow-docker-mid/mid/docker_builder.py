@@ -191,7 +191,7 @@ def push_docker_image(docker_image_name, docker_image_tag):
 
 def main():
     parser = argparse.ArgumentParser(description="Download and build Docker images.")
-    parser.add_argument("--country", choices=['vancouver', 'tokyo', 'utah'], required=True,
+    parser.add_argument("--country", choices=['vancouver', 'tokyo', 'utah', 'pdi'], required=True,
                         help="The country for which to process data")
     parser.add_argument("--platform", choices=['windows', 'linux'], required=True,
                         help="The platform (windows or linux)")
