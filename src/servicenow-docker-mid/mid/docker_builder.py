@@ -1,3 +1,4 @@
+import json
 import os
 
 import requests
@@ -14,33 +15,38 @@ def generate_download_links(data, country, platform):
 
     for row in data:
         api_url, date, tags = row
-        date1 = date.split('_')[0]
-        year1 = date1.split('-')[2]
-        month1 = date1.split('-')[0]
-        day1 = date1.split('-')[1]
-        tag_parts = tags.split('-')
-        tag = '-'.join(tag_parts[1:])  # Remove "glide-" prefix
-        template = f"https://install.service-now.com/glide/distribution/builds/package/app-signed/mid-{platform}-container-recipe/{year1}/{month1}/{day1}/mid-{platform}-container-recipe.{tag}_{date}.{platform}.x86-64.zip"
-        download_links.append(template)
-
-    print(download_links)
-
+        try:
+            date1 = date.split('_')[0]
+            year1 = date1.split('-')[2]
+            month1 = date1.split('-')[0]
+            day1 = date1.split('-')[1]
+            tag_parts = tags.split('-')
+            tag = '-'.join(tag_parts[1:])  # Remove "glide-" prefix
+            template = f"https://install.service-now.com/glide/distribution/builds/package/app-signed/mid-{platform}-container-recipe/{year1}/{month1}/{day1}/mid-{platform}-container-recipe.{tag}_{date}.{platform}.x86-64.zip"
+            download_links.append(template)
+            # print(download_links)
+        except IndexError:
+            print(f"Skipping invalid date format: {api_url}, {date}, {tags}")
+            continue
     return download_links
 
 
-def download_and_build(download_links, platform):
+def download_and_build(download_links, platform, rebuild):
+    print("=============================================================")
     for link in download_links:
         # Download the package from the link
         response = requests.get(link, stream=True)
+        print(f"{link} --> {response}\n")
         if response.status_code == 200:
             filename = link.split("/")[-1]
             with open(filename, "wb") as f:
                 for chunk in response.iter_content(chunk_size=8192):
                     f.write(chunk)
-            print(f"Downloaded {filename}")
+            print(f"Downloaded {filename}\n")
 
             # Create a folder with the same name as the zip file
             folder_name = os.path.splitext(filename)[0]
+            # print(folder_name)
             os.makedirs(folder_name, exist_ok=True)
 
             # Unzip the downloaded package into the folder
@@ -49,66 +55,152 @@ def download_and_build(download_links, platform):
 
             os.remove(filename)  # Remove the zip file after extraction
 
-            # docker_client = docker.from_env()
+            env_file_path = f"{folder_name}/.env"
 
-            # Load the DOCKER_TAG environment variable from the .env file
-            load_dotenv(dotenv_path=f"{folder_name}/.env")
-            docker_tag = os.getenv("DOCKER_TAG")
+            with open(env_file_path, 'r') as file:
+                # Assuming the file has only one line and follows the format KEY=VALUE
+                line = file.readline().strip()
+                key, value = line.split('=')
 
-            # Run Docker command inside the extracted folder
-            print(docker_tag)
-            docker_image_name = docker_tag.split(':')[0]
-            docker_image_tag = docker_tag.split(':')[1]
-            # build_context = f"{folder_name}"
-            # docker_platform = f"{platform}/amd64"
-            docker_command = ["docker", "build", "-t", "mid-windows:"f"{docker_image_tag}", "."]
-            # Create a new builder instance using Docker Buildx
-            # subprocess.run(["docker", "buildx", "create", "--use"])
-            # docker_command = ["docker", "buildx", "build",
-            #                   "--platform", "windows/amd64", "--push",
-            #                   "-t", docker_tag, "."]
-            subprocess.run(docker_command, cwd=folder_name, check=True)
-            print(f"Docker build completed for {filename}")
-            push_docker_image(docker_image_name, docker_image_tag)
-            # build_options = {
-            #     "path": build_context,
-            #     "dockerfile": "Dockerfile",  # Path to your Dockerfile
-            #     "tag": docker_image_name+":"+docker_image_tag,
-            # }
-            # for platform in platforms:
-            #     print(f"Building for platform: {platform}")
-            #     build_options["platform"] = platform
-            #     response = docker_client.images.build(**build_options)
-            #     for line in response:
-            #         if "stream" in line:
-            #             print(line["stream"].strip())
+            # Access the specific value you need
+            if key == "DOCKER_TAG":
+                docker_tag = value
+                docker_image_name = docker_tag.split(':')[0]
+                docker_image_tag = docker_tag.split(':')[1]
+                docker_tag_exists_command = ["docker", "manifest", "inspect",
+                                             "arumugamsubramanian/"f"{docker_image_name}:"f"{docker_image_tag}"]
+                # docker_tag_exists_command = ["docker", "manifest", "inspect",
+                # "arumugamsubramanian/mid:vancouver-07-06-2023__patch4-11-02-2023_11-14-2023_1911ss"]
+                if rebuild:
+                    print("Since rebuild flag is passed, rebuilding the image")
+                    print(f"Building docker image {docker_image_name}-{platform}:{docker_image_tag}\n")
+                    docker_command = ["docker", "build", "-t",
+                                      ""f"{docker_image_name}-{platform}:"f"{docker_image_tag}", "."]
+                    subprocess.run(docker_command, cwd=folder_name, check=True)
+                    print(f"Docker build completed for {filename}\n")
+                    push_docker_image(docker_image_name + '-' + platform, docker_image_tag)
+                    print("=============================================================")
+                else:
+                    expected_platforms = [
+                        {"os": "linux", "architecture": "amd64"},
+                        {"os": "windows", "architecture": "amd64"}
+                    ]
+                    if check_tag_and_platform_exists(
+                            "arumugamsubramanian/"f"{docker_image_name}-{platform}:"f"{docker_image_tag}",
+                            expected_platforms):
+                        print("docker image was already built, so skipping\n")
+                        print("=============================================================")
+                    else:
+                        print(f"Building docker image {docker_image_name}-{platform}:{docker_image_tag}\n")
+                        docker_command = ["docker", "build", "-t",
+                                          ""f"{docker_image_name}-{platform}:"f"{docker_image_tag}",
+                                          "."]
+                        subprocess.run(docker_command, cwd=folder_name, check=True)
+                        print(f"Docker build completed for {filename}\n")
+                        push_docker_image(docker_image_name + '-' + platform, docker_image_tag)
+                        print("=============================================================")
+                        # try:
+                        #     subprocess.check_output(docker_tag_exists_command, stderr=subprocess.STDOUT)
+                        #     print("docker image was already built, so skipping")
+                        # except subprocess.CalledProcessError as e:
+                        #     if "no such manifest" in e.output.decode():
+                        #         print("Tag does not exist")
+                        #         print(f"Building docker image {docker_image_name}:{docker_image_tag}\n")
+                        #         docker_command = ["docker", "build", "-t", ""f"{docker_image_name}:"f"{docker_image_tag}",
+                        #                           "."]
+                        #         subprocess.run(docker_command, cwd=folder_name, check=True)
+                        #         print(f"Docker build completed for {filename}\n")
+                        #         push_docker_image(docker_image_name, docker_image_tag)
+                        #     else:
+                        #         # Handle other errors if needed
+                        #         print("An error occurred:", e.output.decode())
+        else:
+            print("=============================================================")
+
+
+def check_tag_and_platform_exists(docker_tag, expected_platforms):
+    docker_tag_exists_command = ["docker", "manifest", "inspect", docker_tag]
+
+    try:
+        subprocess.check_output(docker_tag_exists_command, stderr=subprocess.STDOUT)
+        # print("docker image was already built, so skipping")
+        return True
+        # subprocess.check_output(docker_manifest_inspect_command, stderr=subprocess.STDOUT)
+        # manifest_info = subprocess.check_output(docker_tag_exists_command, stderr=subprocess.STDOUT)
+        # manifest_info = manifest_info.decode('utf-8')
+        #
+        # image_info = json.loads(manifest_info)[0]
+        # arch = image_info['Architecture']
+        # os = image_info['Os']
+        #
+        # # print(image_info['Os'])
+        # # print(image_info['Architecture'])
+        # # print(expected_platforms)
+        # is_image_exists = False
+        # for expected_platform in expected_platforms:
+        #     if os == expected_platform["os"] and arch == expected_platform["architecture"]:
+        #         is_image_exists = True
+        #
+        # return is_image_exists
+
+    except subprocess.CalledProcessError as e:
+        print(e.output.decode())
+        if "Error response from daemon" in e.output.decode():
+            print("Tag does not exist. Proceeding with the build.")
+            return False
+        elif "no such manifest" in e.output.decode():
+            print("Tag does not exist. Proceeding with the build.")
+            return False
+        elif "image operating system" in e.output.decode():
+            print("Tag does not exist. Proceeding with the build.")
+            return False
+        else:
+            print("An error occurred:", e.output.decode())
+            return True
 
 
 def push_docker_image(docker_image_name, docker_image_tag):
-    # Set up a Docker client
-    print("here")
-    docker_client = docker.from_env()
-    # Authenticate with the Docker registry
+    # Set up Docker login credentials
     docker_username = os.getenv("DOCKER_USERNAME")
     docker_password = os.getenv("DOCKER_PASSWORD")
-    docker_client.login(username=docker_username, password=docker_password)
 
-    # Tag the Docker image
-    docker_image = docker_client.images.get("mid-windows:" + docker_image_tag)
-    docker_image.tag(repository='arumugamsubramanian/mid-windows', tag=docker_image_tag)
+    # Docker login command
+    docker_login_command = f"docker login -u {docker_username} -p {docker_password}"
 
-    # Push the Docker image to the registry
-    docker_client.images.push(repository='arumugamsubramanian/mid-windows', tag=docker_image_tag)
+    # Docker tag command
+    docker_tag_command = f"docker tag {docker_image_name}:{docker_image_tag} arumugamsubramanian/{docker_image_name}:{docker_image_tag}"
+
+    # Docker push command
+    docker_push_command = f"docker push arumugamsubramanian/{docker_image_name}:{docker_image_tag}"
+
+    try:
+        # Run Docker login
+        subprocess.run(docker_login_command, shell=True, check=True)
+
+        # Run Docker tag
+        subprocess.run(docker_tag_command, shell=True, check=True)
+
+        # Run Docker push
+        subprocess.run(docker_push_command, shell=True, check=True)
+
+        print(f"Successfully pushed Docker image: arumugamsubramanian/{docker_image_name}:{docker_image_tag}")
+
+    except subprocess.CalledProcessError as e:
+        print(f"Error executing Docker command: {e}")
 
 
 def main():
     parser = argparse.ArgumentParser(description="Download and build Docker images.")
-    parser.add_argument("country", help="The country for which to process data")
-    parser.add_argument("platform", help="The platform (windows or linux)")
+    parser.add_argument("--country", choices=['vancouver', 'tokyo', 'utah', 'pdi'], required=True,
+                        help="The country for which to process data")
+    parser.add_argument("--platform", choices=['windows', 'linux'], required=True,
+                        help="The platform (windows or linux)")
+    parser.add_argument("--rebuild", action="store_true", help="rebuild the image for all the tags")
 
     args = parser.parse_args()
     country = args.country
     platform = args.platform
+    rebuild = args.rebuild
 
     # Read CSV data from the local root path
     csv_file = f"{country}_data.csv"
@@ -122,7 +214,7 @@ def main():
     download_links = generate_download_links(data, country, platform)
 
     # Download and build packages
-    download_and_build(download_links, platform)
+    download_and_build(download_links, platform, rebuild)
 
 
 if __name__ == "__main__":

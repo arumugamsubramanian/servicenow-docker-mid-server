@@ -4,8 +4,13 @@ on:
   workflow_dispatch:
 
 jobs:
-  mid-docker-build-vancouver:
+  mid-docker-build-windows:
     runs-on: windows-2019
+    strategy:
+      matrix:
+        version:
+          - vancouver
+          - utah
     defaults:
       run:
         shell: bash
@@ -41,38 +46,43 @@ jobs:
       - name: Run script
         run: |
           source $VENV
-          poetry run servicenow-docker-build vancouver windows
+          poetry run servicenow-docker-build --country ${{ matrix.version }} --platform windows
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
 
-#  mid-docker-build-vancouver:
-#    runs-on: ubuntu-latest
-#
-#    permissions:
-#      # Give the default GITHUB_TOKEN write permission to commit and push the
-#      # added or changed files to the repository.
-#      contents: write
-#
-#    steps:
-#      - name: Checkout code
-#        uses: actions/checkout@v3
-#
-#      - name: Set up Python
-#        uses: actions/setup-python@v4.7.0
-#        with:
-#          python-version: 3.10.13
-#
-#      - name: Install Poetry
-#        run: |
-#          curl -sSL https://install.python-poetry.org | python3 -
-#
-#      - name: Install dependencies
-#        run: poetry install
-#
-#      - name: Run script
-#        run: |
-#          poetry run servicenow-docker-build vancouver linux
-#        env:
-#          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-#          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+  mid-docker-build-linux:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        version:
+          - vancouver
+          - utah
+
+    permissions:
+      # Give the default GITHUB_TOKEN write permission to commit and push the
+      # added or changed files to the repository.
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4.7.0
+        with:
+          python-version: 3.10.13
+
+      - name: Install Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+
+      - name: Install dependencies
+        run: poetry install
+
+      - name: Run script
+        run: |
+          poetry run servicenow-docker-build --country ${{ matrix.version }} --platform linux
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
