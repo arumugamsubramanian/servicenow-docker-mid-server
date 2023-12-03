@@ -36,3 +36,6 @@ docker run --env-file run/mid.env \
   --name mid_server \
   arumugamsubramanian/mid-linux:vancouver-07-06-2023__patch2-hotfix1-10-04-2023_10-06-2023_1235
 ```
+
+
+https://install.service-now.com/glide/distribution/builds/package/app-signed/mid-linux-container-recipe/2023/10/10/mid-linux-container-recipe.utah-12-21-2022__patch7a-09-28-2023_10-10-2023_1258.linux.x86-64.zip
