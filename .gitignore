@@ -3,6 +3,7 @@
 **/__pycache__/**
 **/mid-*
 /mid-windows-container-recipe.vancouver-07-06-2023__patch0-07-18-2023_07-26-2023_1029.windows.x86-64/
-**/mid.env
+run/snc_mid_server_container_files/mid.env
 mid.env
 run/snc_mid_server_container_files/**
+run/utah/**
