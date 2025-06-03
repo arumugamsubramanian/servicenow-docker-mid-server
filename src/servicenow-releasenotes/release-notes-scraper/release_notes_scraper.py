@@ -73,7 +73,7 @@ def main():
     unique_api_urls, unique_build_dates, unique_build_tags = scrape_release_notes(country)
 
     # Create a CSV file for the current country
-    with open(f"{country}_data.csv", mode='w', newline='') as csv_file:
+    with open(f"{country}_dataset_dump.csv", mode='w', newline='') as csv_file:
         fieldnames = ["api_url", "date", "tags"]
         writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
         writer.writeheader()
