@@ -9,9 +9,10 @@ jobs:
     strategy:
       matrix:
         version:
-#          - vancouver
-#          - utah
-          - tokyo
+          - vancouver
+          - washingtondc
+          - xanadu
+          - yokohama
     defaults:
       run:
         shell: bash
@@ -57,9 +58,10 @@ jobs:
     strategy:
       matrix:
         version:
-#          - vancouver
-#          - utah
-          - tokyo
+          - vancouver
+          - washingtondc
+          - xanadu
+          - yokohama
 
     permissions:
       # Give the default GITHUB_TOKEN write permission to commit and push the
