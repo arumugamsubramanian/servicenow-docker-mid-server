@@ -57,8 +57,9 @@ jobs:
     strategy:
       matrix:
         version:
-          - vancouver
-          - utah
+#          - vancouver
+#          - utah
+          - tokyo
 
     permissions:
       # Give the default GITHUB_TOKEN write permission to commit and push the
