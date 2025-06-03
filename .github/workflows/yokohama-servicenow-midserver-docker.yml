@@ -1,6 +1,8 @@
-name: Build MidServer Docker Image and publish to docker registry
+name: Build yokohama-servicenow-midserver-docker.yml
 
 on:
+  schedule:
+    - cron: "0 9 * * *"
   workflow_dispatch:
 
 jobs:
@@ -9,9 +11,9 @@ jobs:
     strategy:
       matrix:
         version:
-          - vancouver
-          - washingtondc
-          - xanadu
+#          - vancouver
+#          - washingtondc
+#          - xanadu
           - yokohama
     defaults:
       run:
@@ -58,9 +60,9 @@ jobs:
     strategy:
       matrix:
         version:
-          - vancouver
-          - washingtondc
-          - xanadu
+#          - vancouver
+#          - washingtondc
+#          - xanadu
           - yokohama
 
     permissions:

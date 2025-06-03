@@ -1,6 +1,8 @@
-name: Build MidServer Docker Image and publish to docker registry
+name: Build washingtondc-servicenow-midserver-docker.yml
 
 on:
+  schedule:
+    - cron: "0 7 * * *"
   workflow_dispatch:
 
 jobs:
@@ -9,10 +11,10 @@ jobs:
     strategy:
       matrix:
         version:
-          - vancouver
+#          - vancouver
           - washingtondc
-          - xanadu
-          - yokohama
+#          - xanadu
+#          - yokohama
     defaults:
       run:
         shell: bash
@@ -58,10 +60,10 @@ jobs:
     strategy:
       matrix:
         version:
-          - vancouver
+#          - vancouver
           - washingtondc
-          - xanadu
-          - yokohama
+#          - xanadu
+#          - yokohama
 
     permissions:
       # Give the default GITHUB_TOKEN write permission to commit and push the
