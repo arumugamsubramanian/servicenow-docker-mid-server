@@ -33,8 +33,9 @@ jobs:
       - name: Run script
         run: |
           poetry run servicenow-release-notes vancouver
-          poetry run servicenow-release-notes utah
-          poetry run servicenow-release-notes tokyo
+          poetry run servicenow-release-notes xanadu
+          poetry run servicenow-release-notes yokohama
+          poetry run servicenow-release-notes washingtondc
 
       - name: Configure Git user
         run: |
