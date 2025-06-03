@@ -7,3 +7,4 @@ run/snc_mid_server_container_files/mid.env
 mid.env
 run/snc_mid_server_container_files/**
 run/utah/**
+/run/yokohama/snc_mid_server/
