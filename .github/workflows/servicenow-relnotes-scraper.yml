@@ -35,6 +35,7 @@ jobs:
           poetry run servicenow-release-notes vancouver
           poetry run servicenow-release-notes xanadu
           poetry run servicenow-release-notes yokohama
+          poetry run servicenow-release-notes zurich
           poetry run servicenow-release-notes washingtondc
 
       - name: Configure Git user
