@@ -65,7 +65,7 @@ def scrape_release_notes(country):
 
 def main():
     parser = argparse.ArgumentParser(description="Release Notes Scraper")
-    parser.add_argument("country", choices=["xanadu", "yokohama", "vancouver", "washingtondc"], help="Select a country for scraping")
+    parser.add_argument("country", choices=["xanadu", "yokohama", "zurich", "vancouver", "washingtondc"], help="Select a country for scraping")
 
     args = parser.parse_args()
     country = args.country
