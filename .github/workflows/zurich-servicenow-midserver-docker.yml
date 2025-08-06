@@ -1,4 +1,4 @@
-name: Build yokohama-servicenow-midserver-docker.yml
+name: Build zurich-servicenow-midserver-docker.yml
 
 on:
   schedule:
