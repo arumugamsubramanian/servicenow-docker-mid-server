@@ -32,7 +32,7 @@ def generate_download_links(data, country, platform):
 
 
 def download_and_build(download_links, platform, rebuild):
-    print("=============================================================")
+    print("1=============================================================")
     for link in download_links:
         # Download the package from the link
         response = requests.get(link, stream=True)
@@ -79,7 +79,7 @@ def download_and_build(download_links, platform, rebuild):
                     subprocess.run(docker_command, cwd=folder_name, check=True)
                     print(f"Docker build completed for {filename}\n")
                     push_docker_image(docker_image_name + '-' + platform, docker_image_tag)
-                    print("=============================================================")
+                    print("2=============================================================")
                 else:
                     expected_platforms = [
                         {"os": "linux", "architecture": "amd64"},
@@ -89,7 +89,7 @@ def download_and_build(download_links, platform, rebuild):
                             "arumugamsubramanian/"f"{docker_image_name}-{platform}:"f"{docker_image_tag}",
                             expected_platforms):
                         print("docker image was already built, so skipping\n")
-                        print("=============================================================")
+                        print("3=============================================================")
                     else:
                         print(f"Building docker image {docker_image_name}-{platform}:{docker_image_tag}\n")
                         docker_command = ["docker", "build", "-t",
@@ -98,7 +98,7 @@ def download_and_build(download_links, platform, rebuild):
                         subprocess.run(docker_command, cwd=folder_name, check=True)
                         print(f"Docker build completed for {filename}\n")
                         push_docker_image(docker_image_name + '-' + platform, docker_image_tag)
-                        print("=============================================================")
+                        print("4=============================================================")
                         # try:
                         #     subprocess.check_output(docker_tag_exists_command, stderr=subprocess.STDOUT)
                         #     print("docker image was already built, so skipping")
@@ -115,7 +115,7 @@ def download_and_build(download_links, platform, rebuild):
                         #         # Handle other errors if needed
                         #         print("An error occurred:", e.output.decode())
         else:
-            print("=============================================================")
+            print("5=============================================================")
 
 
 def check_tag_and_platform_exists(docker_tag, expected_platforms):
